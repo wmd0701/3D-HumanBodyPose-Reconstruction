@@ -1,0 +1,38 @@
+trainer: conv
+out_dir: ../tmp_out  # NOTE: specify a directory in your scratch directory on Leonhard
+
+device: cuda
+
+model:
+  name: conv
+
+training:
+  print_every: 100
+  validate_every: 5000
+  checkpoint_every: 5000
+
+  optimizer:
+    name: SGD
+    lr: 0.0001
+
+  batch_size: 10
+  num_workers: 4
+
+loss:
+  v2v_l1: True  # loss type
+  v2v_l1_w: 1.0  # corresponding weight
+
+  v2v_l2: True
+  v2v_l2_w: 1.0
+
+data:
+  dataset: base  # dataset type
+  resy: 256
+  resx: 256
+  train_subjects: S1,S5,S6
+  val_subjects: S7,S8  # you could use this subjects for training as well
+
+  # there is no need to modify the following parameters on Leonhard
+  dataset_folder: /cluster/project/infk/hilliges/lectures/mp21/project3/data/H36M_data_st
+  img_folder: /cluster/project/infk/hilliges/lectures/mp21/project3/data/H36M
+  bm_path: /cluster/project/infk/hilliges/lectures/mp21/project3/body_model/model.npz
