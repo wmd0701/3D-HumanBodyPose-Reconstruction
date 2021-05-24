@@ -1,0 +1,1 @@
+Please run $module load eth_proxy$ from bash before submit the task. Otherwise resnet-50 cannot be downloaded correctly.
