@@ -105,10 +105,10 @@ class ConvModel(BaseModel):
 
         # generate final outputs. These four outputs are essentially the last layer of the regressor in the paper,
         # which has a dimension of 85. In our case the dimentsion is 3 + 10 + 63 + 6 = 82
-        self.nn_root_orient = nn.Linear(self.1024, 3)
-        self.nn_betas = nn.Linear(self.1024, 10)
-        self.nn_pose_body = nn.Linear(self.1024, 63)
-        self.nn_pose_hand = nn.Linear(self.1024, 6)
+        self.nn_root_orient = nn.Linear(1024, 3)
+        self.nn_betas = nn.Linear(1024, 10)
+        self.nn_pose_body = nn.Linear(1024, 63)
+        self.nn_pose_hand = nn.Linear(1024, 6)
 
 
     def forward(self, input_data):
