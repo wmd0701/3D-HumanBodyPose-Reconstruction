@@ -67,12 +67,12 @@ def get_optimizer(model, cfg):
     if cfg['training']['optimizer']['name'] == 'SGD':
         optimizer = optim.SGD(  model.backbone.fcparameters(), 
                                 lr=cfg['training']['optimizer'].get('lr', 1e-4),
-                                wd=cfg['training']['optimizer'].get('wd', 1e-5),
+                                weight_decay=cfg['training']['optimizer'].get('wd', 1e-5),
                              )
     elif cfg['training']['optimizer']['name'] == 'Adam':
         optimizer = optim.Adam( model.backbone.fc.parameters(), 
                                 lr=cfg['training']['optimizer'].get('lr', 1e-4),
-                                wd=cfg['training']['optimizer'].get('wd', 1e-5),
+                                weight_decay=cfg['training']['optimizer'].get('wd', 1e-5),
                               )
     else:
         raise Exception('Not supported.')
