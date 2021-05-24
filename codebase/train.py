@@ -7,7 +7,7 @@ from checkpoints import CheckpointIO
 import config
 
 
-def train(cfg, model_file):
+def train(cfg, model_file, n_epochs):
     # shortened
     out_dir = cfg['out_dir']
     model_file = model_file if model_file is not None else 'model_best.pt'
@@ -42,6 +42,9 @@ def train(cfg, model_file):
     # training loop
     while True:
         epoch_it += 1
+        if epoch_it >= n_epochs:
+            break
+
         for batch in train_data_loader:
             it += 1
 
@@ -84,4 +87,4 @@ if __name__ == '__main__':
     parser.add_argument('--model_file', type=str, default=None, help='Overwrite the model path.')
     _args = parser.parse_args()
 
-    train(config.load_config(_args), _args.model_file)
+    train(config.load_config(_args), _args.model_file, 50)

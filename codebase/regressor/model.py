@@ -1,6 +1,7 @@
 from abc import ABC
 
 from torch import nn
+from torchvision import models
 from .body_model import BodyModel
 
 
@@ -69,6 +70,8 @@ class ConvModel(BaseModel):
 
     def _build_net(self):
         """ Creates NNs. """
+
+        """
         fc_in_ch = 1*(self.img_resolution[0]//2**3)*(self.img_resolution[1]//2**3)
         self.backbone = nn.Sequential(
             nn.Conv2d(self.in_ch, 5, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1)), nn.ReLU(),
@@ -84,6 +87,29 @@ class ConvModel(BaseModel):
         self.nn_betas = nn.Linear(self.backbone_f_len, 10)
         self.nn_pose_body = nn.Linear(self.backbone_f_len, 63)
         self.nn_pose_hand = nn.Linear(self.backbone_f_len, 6)
+        """
+
+        # following idea from http://dspace.mit.edu/handle/1721.1/127157
+        # firstly, a Resnes-50 as feature extractor
+        self.backbone = models.resnet50(pretrained=True)
+        for param in self.backbone.parameters():
+            param.requires_grad = False
+
+        # change the last layer of resnet50 to a two-layer regressor of sizes 2048 -> 1024 -> 1024 (-> 85)
+        self.backbone.fc = nn.Sequential(
+            nn.Linear(in_features=2048, out_features=1024),
+            nn.ReLU(),
+            nn.Linear(in_features=1024, out_features=1024),
+            nn.ReLU()
+        )
+
+        # generate final outputs. These four outputs are essentially the last layer of the regressor in the paper,
+        # which has a dimension of 85. In our case the dimentsion is 3 + 10 + 63 + 6 = 82
+        self.nn_root_orient = nn.Linear(self.1024, 3)
+        self.nn_betas = nn.Linear(self.1024, 10)
+        self.nn_pose_body = nn.Linear(self.1024, 63)
+        self.nn_pose_hand = nn.Linear(self.1024, 6)
+
 
     def forward(self, input_data):
         """ Fwd pass.
