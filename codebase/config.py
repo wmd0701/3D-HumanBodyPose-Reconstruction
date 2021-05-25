@@ -65,12 +65,22 @@ def get_optimizer(model, cfg):
     """ Create an optimizer. """
 
     if cfg['training']['optimizer']['name'] == 'SGD':
-        optimizer = optim.SGD(  model.backbone.fcparameters(), 
+        optimizer = optim.SGD(  [   model.backbone.fc.parameters(), 
+                                    model.nn_root_orient.parameters(), 
+                                    model.nn_betas.parameters(),
+                                    model.nn_pose_body.parameters(),
+                                    model.nn_pose_hand.parameters()
+                                ],
                                 lr=cfg['training']['optimizer'].get('lr', 1e-4),
                                 weight_decay=cfg['training']['optimizer'].get('wd', 1e-5),
                              )
     elif cfg['training']['optimizer']['name'] == 'Adam':
-        optimizer = optim.Adam( model.backbone.fc.parameters(), 
+        optimizer = optim.Adam( [   model.backbone.fc.parameters(), 
+                                    model.nn_root_orient.parameters(), 
+                                    model.nn_betas.parameters(),
+                                    model.nn_pose_body.parameters(),
+                                    model.nn_pose_hand.parameters()
+                                ],
                                 lr=cfg['training']['optimizer'].get('lr', 1e-4),
                                 weight_decay=cfg['training']['optimizer'].get('wd', 1e-5),
                               )
