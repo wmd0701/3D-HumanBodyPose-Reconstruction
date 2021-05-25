@@ -63,26 +63,23 @@ def get_model(cfg):
 
 def get_optimizer(model, cfg):
     """ Create an optimizer. """
+    params_fc    = list(model.backbone.fc.parameters())
+    params_root  = list(model.nn_root_orient.parameters())
+    params_betas = list(model.nn_betas.parameters())
+    params_body  = list(model.nn_pose_body.parameters())
+    params_hand  = list(model.nn_pose_hand.parameters())
+
+    params = params_fc + params_root + params_betas + params_body + params_hand
 
     if cfg['training']['optimizer']['name'] == 'SGD':
-        optimizer = optim.SGD(  [   model.backbone.fc.parameters(), 
-                                    model.nn_root_orient.parameters(), 
-                                    model.nn_betas.parameters(),
-                                    model.nn_pose_body.parameters(),
-                                    model.nn_pose_hand.parameters()
-                                ],
+        optimizer = optim.SGD(  params,
                                 lr=cfg['training']['optimizer'].get('lr', 1e-4),
-                                weight_decay=cfg['training']['optimizer'].get('wd', 1e-5),
+                                weight_decay=cfg['training']['optimizer'].get('wd', 1e-5)
                              )
     elif cfg['training']['optimizer']['name'] == 'Adam':
-        optimizer = optim.Adam( [   model.backbone.fc.parameters(), 
-                                    model.nn_root_orient.parameters(), 
-                                    model.nn_betas.parameters(),
-                                    model.nn_pose_body.parameters(),
-                                    model.nn_pose_hand.parameters()
-                                ],
+        optimizer = optim.Adam( params,
                                 lr=cfg['training']['optimizer'].get('lr', 1e-4),
-                                weight_decay=cfg['training']['optimizer'].get('wd', 1e-5),
+                                weight_decay=cfg['training']['optimizer'].get('wd', 1e-5)
                               )
     else:
         raise Exception('Not supported.')
