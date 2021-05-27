@@ -1,1 +1,1 @@
-Please run `module load eth_proxy` from bash before submit the task. Otherwise resnet-50 cannot be downloaded correctly.
+Please run `module load eth_proxy` in bash before submitting the task to Leonhard. Otherwise resnet-50 cannot be downloaded correctly.
