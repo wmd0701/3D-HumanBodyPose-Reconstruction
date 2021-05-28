@@ -14,7 +14,7 @@ training:
   optimizer:
     name: Adam
     lr: 0.0003
-    wd: 0.00005
+    wd: 0.00001
 
   batch_size: 10
   num_workers: 4
