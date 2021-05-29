@@ -79,6 +79,7 @@ class CheckpointIO(object):
             print(filename)
             print('=> Loading checkpoint from local file...')
             state_dict = torch.load(filename)
+            #state_dict = torch.load(filename, map_location=torch.device('cpu')) # For CPU training
             scalars = self.parse_state_dict(state_dict)
             return scalars
         else:
