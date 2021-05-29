@@ -1,5 +1,5 @@
 trainer: conv
-out_dir: ../tmp_out  # NOTE: specify a directory in your scratch directory on Leonhard
+out_dir: ../out/default  # NOTE: specify a directory in your scratch directory on Leonhard
 
 device: cuda
 
