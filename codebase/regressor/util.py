@@ -1,4 +1,6 @@
 import torch
+import numpy as np
+import h5py
 
 
 @torch.no_grad()
@@ -41,3 +43,18 @@ def proj_vertices(points, images, fx, fy, cx, cy):
     rendered_img = rendered_img.permute(0, 3, 1, 2)
 
     return rendered_img
+
+
+def load_smpl_init_params():
+    init_params = np.zeros(3 + 69 + 10, dtype=np.float)
+    mean_values = h5py.File("data/neutral_smpl_mean_params.h5")
+
+    init_root_orient = np.array([np.pi, 0., 0.])
+    init_pose = mean_values['pose'][3:]
+    init_shape = mean_values['shape']
+
+    init_params[:3] = init_root_orient[:]
+    init_params[3:72] = init_pose[:]
+    init_params[72:] = init_shape[:]
+
+    return init_params
