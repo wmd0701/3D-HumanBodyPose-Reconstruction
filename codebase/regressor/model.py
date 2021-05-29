@@ -2,6 +2,9 @@ from abc import ABC
 
 from torch import nn
 from .body_model import BodyModel
+from .resnet import load_resnet
+from .iterative_regressor import IterativeRegressor
+from .util import load_smpl_init_params
 
 
 class BaseModel(nn.Module, ABC):
@@ -64,26 +67,38 @@ class ConvModel(BaseModel):
     def __init__(self, cfg):
         super().__init__(cfg)
 
-        self.backbone_f_len = cfg['model'].get('backbone_f_len', 500)
-        self._build_net()
+        self._build_net(cfg)
 
-    def _build_net(self):
+    def _build_net(self, cfg):
         """ Creates NNs. """
-        fc_in_ch = 1*(self.img_resolution[0]//2**3)*(self.img_resolution[1]//2**3)
-        self.backbone = nn.Sequential(
-            nn.Conv2d(self.in_ch, 5, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1)), nn.ReLU(),
-            nn.Conv2d(5, 5, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1)), nn.ReLU(),
-            nn.Conv2d(5, 5, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1)), nn.ReLU(),
-            nn.Conv2d(5, 1, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1)), nn.ReLU(),
-            # flattening
-            nn.Flatten(),
-            nn.Linear(fc_in_ch, self.backbone_f_len)
-        )
+        
+        # Use resnet as feature extractor, replace last layer with identity
+        self.backbone = load_resnet()
+        self.backbone.fc = nn.Identity()
 
-        self.nn_root_orient = nn.Linear(self.backbone_f_len, 3)
-        self.nn_betas = nn.Linear(self.backbone_f_len, 10)
-        self.nn_pose_body = nn.Linear(self.backbone_f_len, 63)
-        self.nn_pose_hand = nn.Linear(self.backbone_f_len, 6)
+
+        # Define iterative regression inspired by HMR
+        fc_layers = [2048 + 82, 1024, 1024, 82]
+        use_dropout = [True, True, False]
+        drop_prob = [0.5, 0.5, 0.5]
+        use_ac_func = [True, True, False]
+        iterations = 3
+        initialization = load_smpl_init_params()
+    
+        self.regressor = IterativeRegressor(
+            fc_layers,
+            use_dropout,
+            drop_prob,
+            use_ac_func,
+            iterations,
+            initialization,
+            self.batch_size)
+        
+        # Layers to extract final outputs. Dimension + 10 + 63 + 6 = 82
+        self.nn_root_orient = nn.Linear(82, 3)
+        self.nn_betas = nn.Linear(82, 10)
+        self.nn_pose_body = nn.Linear(82, 63)
+        self.nn_pose_hand = nn.Linear(82, 6)
 
     def forward(self, input_data):
         """ Fwd pass.
@@ -97,10 +112,11 @@ class ConvModel(BaseModel):
         img_encoding = self.backbone(image_crop)
 
         # regress parameters
-        root_orient = self.nn_root_orient(img_encoding)
-        betas = self.nn_betas(img_encoding)
-        pose_body = self.nn_pose_body(img_encoding)
-        pose_hand = self.nn_pose_hand(img_encoding)
+        params = self.regressor(img_encoding)
+        root_orient = self.nn_root_orient(params)
+        betas = self.nn_betas(params)
+        pose_body = self.nn_pose_body(params)
+        pose_hand = self.nn_pose_hand(params)
 
         # regress vertices
         vertices = self.get_vertices(root_loc, root_orient, betas, pose_body, pose_hand)
