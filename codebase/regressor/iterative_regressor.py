@@ -16,7 +16,8 @@ class IterativeRegressor(LinearModel):
             theta: 
     '''
     def forward(self, inputs):
-        theta = self.init_theta
+        size = inputs.shape[0]
+        theta = self.init_theta[:size]
         for _ in range(self.iterations):
             total_inputs = torch.cat([inputs, theta], 1)
             theta = theta + self.fc_blocks(total_inputs)
