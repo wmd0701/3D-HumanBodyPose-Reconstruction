@@ -76,7 +76,7 @@ class ConvModel(BaseModel):
         self.backbone = load_backbone(cfg['model'].get('backbone', 'resnet50'))
 
         # Choose regressor based on config
-        self.regressor, last_layer_n = get_regressor(cfg['model'].get('backbone', 'simple'), self.batch_size)
+        self.regressor, last_layer_n = get_regressor(cfg['model'].get('regressor', 'simple'), self.batch_size)
         
         # Layers to extract final outputs. Dimension 3 + 10 + 63 + 6 = 82
         self.nn_root_orient = nn.Linear(last_layer_n, 3)
