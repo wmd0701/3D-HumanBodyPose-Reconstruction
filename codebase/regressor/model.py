@@ -2,7 +2,7 @@ from abc import ABC
 
 from torch import nn
 from .body_model import BodyModel
-from .resnet import load_resnet
+from .backbone import load_backbone
 from .iterative_regressor import IterativeRegressor
 from .util import load_smpl_init_params
 
@@ -72,10 +72,8 @@ class ConvModel(BaseModel):
     def _build_net(self, cfg):
         """ Creates NNs. """
         
-        # Use resnet as feature extractor, replace last layer with identity
-        self.backbone = load_resnet()
-        self.backbone.fc = nn.Identity()
-
+        # Load configured backbone
+        self.backbone = load_backbone(cfg['model'].get('backbone', 'resnet50'))
 
         # Define iterative regression inspired by HMR
         fc_layers = [2048 + 82, 1024, 1024, 82]
