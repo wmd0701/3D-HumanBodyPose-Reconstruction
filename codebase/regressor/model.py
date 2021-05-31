@@ -3,7 +3,7 @@ from abc import ABC
 from torch import nn
 from .body_model import BodyModel
 from .backbone import load_backbone
-from .iterative_regressor import IterativeRegressor
+from .regressor import get_regressor
 from .util import load_smpl_init_params
 
 
@@ -75,28 +75,14 @@ class ConvModel(BaseModel):
         # Load configured backbone
         self.backbone = load_backbone(cfg['model'].get('backbone', 'resnet50'))
 
-        # Define iterative regression inspired by HMR
-        fc_layers = [2048 + 82, 1024, 1024, 82]
-        use_dropout = [True, True, False]
-        drop_prob = [0.5, 0.5, 0.5]
-        use_ac_func = [True, True, False]
-        iterations = 3
-        initialization = load_smpl_init_params()
-    
-        self.regressor = IterativeRegressor(
-            fc_layers,
-            use_dropout,
-            drop_prob,
-            use_ac_func,
-            iterations,
-            initialization,
-            self.batch_size)
+        # Choose regressor based on config
+        self.regressor, last_layer_n = get_regressor(cfg['model'].get('backbone', 'simple'), self.batch_size)
         
-        # Layers to extract final outputs. Dimension + 10 + 63 + 6 = 82
-        self.nn_root_orient = nn.Linear(82, 3)
-        self.nn_betas = nn.Linear(82, 10)
-        self.nn_pose_body = nn.Linear(82, 63)
-        self.nn_pose_hand = nn.Linear(82, 6)
+        # Layers to extract final outputs. Dimension 3 + 10 + 63 + 6 = 82
+        self.nn_root_orient = nn.Linear(last_layer_n, 3)
+        self.nn_betas = nn.Linear(last_layer_n, 10)
+        self.nn_pose_body = nn.Linear(last_layer_n, 63)
+        self.nn_pose_hand = nn.Linear(last_layer_n, 6)
 
     def forward(self, input_data):
         """ Fwd pass.
@@ -110,11 +96,12 @@ class ConvModel(BaseModel):
         img_encoding = self.backbone(image_crop)
 
         # regress parameters
-        params = self.regressor(img_encoding)
-        root_orient = self.nn_root_orient(params)
-        betas = self.nn_betas(params)
-        pose_body = self.nn_pose_body(params)
-        pose_hand = self.nn_pose_hand(params)
+        regressed_params = self.regressor(img_encoding)
+        
+        root_orient = self.nn_root_orient(regressed_params)
+        betas = self.nn_betas(regressed_params)
+        pose_body = self.nn_pose_body(regressed_params)
+        pose_hand = self.nn_pose_hand(regressed_params)
 
         # regress vertices
         vertices = self.get_vertices(root_loc, root_orient, betas, pose_body, pose_hand)
