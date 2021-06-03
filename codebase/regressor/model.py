@@ -4,7 +4,6 @@ from torch import nn
 from .body_model import BodyModel
 from .backbone import load_backbone
 from .regressor import get_regressor
-from .util import load_smpl_init_params
 
 
 class BaseModel(nn.Module, ABC):

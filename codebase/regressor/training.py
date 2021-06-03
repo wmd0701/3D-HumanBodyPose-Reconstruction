@@ -153,6 +153,12 @@ class ConvTrainer(BaseTrainer):
             loss_dict['v2v_l1'] = torch.abs(vert_diff).mean()
         if self.loss_cfg.get('v2v_l2', False):
             loss_dict['v2v_l2'] = torch.pow(vert_diff, 2).mean()
+        if self.loss_cfg.get('betas_l2', False):
+            loss_dict['betas_l2'] = torch.pow(data['betas'] - prediction['betas'], 2).mean()
+        if self.loss_cfg.get('pose_body_l2', False):
+            loss_dict['pose_body_l2'] = torch.pow(data['pose_body'] - prediction['pose_body'], 2).mean()
+        if self.loss_cfg.get('pose_hand_l2', False):
+            loss_dict['pose_hand_l2'] = torch.pow(data['pose_hand'] - prediction['pose_hand'], 2).mean()
 
         loss_dict['total_loss'] = sum(self.loss_cfg.get(f'{key}_w', 1.) * val for key, val in loss_dict.items())
 
