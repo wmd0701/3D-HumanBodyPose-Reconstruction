@@ -1,6 +1,6 @@
 from torch import nn
 from .iterative_regressor import IterativeRegressor
-from .util import load_smpl_init_params
+from .util import load_smpl_mean_params
 
 def get_regressor(name, batch_size):
     
@@ -10,7 +10,7 @@ def get_regressor(name, batch_size):
         drop_prob = [0.5, 0.5, 0.5]
         use_ac_func = [True, True, False]
         iterations = 3
-        initialization = load_smpl_init_params()
+        initialization = load_smpl_mean_params("data/smpl_mean_params_S1_S5_S6_S7_S8.npz")
 
         regressor = IterativeRegressor(
             fc_layers,
