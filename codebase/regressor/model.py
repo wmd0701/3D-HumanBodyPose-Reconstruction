@@ -71,11 +71,11 @@ class ConvModel(BaseModel):
     def _build_net(self, cfg):
         """ Creates NNs. """
         
-        # Load configured backbone
-        self.backbone = load_backbone(cfg['model'].get('backbone', 'resnet50'))
+        # Load configured backbone - ResNet152
+        self.backbone = load_backbone(cfg['model'].get('backbone', 'resnet152'))
 
-        # Choose regressor based on config
-        self.regressor, last_layer_n = get_regressor(cfg['model'].get('regressor', 'simple'), self.batch_size)
+        # Choose regressor based on config - iterative
+        self.regressor, last_layer_n = get_regressor(cfg['model'].get('regressor', 'iterative'), self.batch_size)
         
         # Layers to extract final outputs. Dimension 3 + 10 + 63 + 6 = 82
         self.nn_root_orient = nn.Linear(last_layer_n, 3)
