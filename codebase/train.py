@@ -84,4 +84,5 @@ if __name__ == '__main__':
     parser.add_argument('--model_file', type=str, default=None, help='Overwrite the model path.')
     _args = parser.parse_args()
 
-    train(config.load_config(_args), _args.model_file)
+# Set the epoch limit to 55
+    train(config.load_config(_args), _args.model_file, 55)
