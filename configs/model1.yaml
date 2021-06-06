@@ -12,8 +12,8 @@ training:
   checkpoint_every: 5000
 
   optimizer:
-    name: SGD
-    lr: 0.0001
+    name: Adam
+    lr: 0.0005
 
   batch_size: 10
   num_workers: 4
@@ -29,8 +29,8 @@ data:
   dataset: base  # dataset type
   resy: 256
   resx: 256
-  train_subjects: S1,S5,S6
-  val_subjects: S7,S8  # you could use this subjects for training as well
+  train_subjects: S1,S5,S6,S7
+  val_subjects: S8  # you could use this subjects for training as well
 
   # there is no need to modify the following parameters on Leonhard
   dataset_folder: /cluster/project/infk/hilliges/lectures/mp21/project3/data/H36M_data_st
