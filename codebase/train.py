@@ -7,7 +7,7 @@ from checkpoints import CheckpointIO
 import config
 
 
-def train(cfg, model_file):
+def train(cfg, model_file, n_epochs):
     # shortened
     out_dir = cfg['out_dir']
     model_file = model_file if model_file is not None else 'model_best.pt'
