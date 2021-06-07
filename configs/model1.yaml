@@ -1,5 +1,5 @@
 trainer: conv
-out_dir: $SCRATCH/out/model1  # NOTE: specify a directory in your scratch directory on Leonhard
+out_dir: /cluster/scratch/azagidull/out/model1  # NOTE: specify a directory in your scratch directory on Leonhard
 
 device: cuda
 
