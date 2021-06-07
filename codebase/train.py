@@ -42,6 +42,9 @@ def train(cfg, model_file, n_epochs):
     # training loop
     while True:
         epoch_it += 1
+        if epoch_it >= n_epochs:
+            break
+
         for batch in train_data_loader:
             it += 1
 
@@ -84,5 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_file', type=str, default=None, help='Overwrite the model path.')
     _args = parser.parse_args()
 
-# Set the epoch limit to 55
-    train(config.load_config(_args), _args.model_file, 55)
+# Set epoch limit to 48
+
+    train(config.load_config(_args), _args.model_file, 48)
+
