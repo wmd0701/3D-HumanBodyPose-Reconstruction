@@ -99,8 +99,10 @@ class ConvModel(BaseModel):
         self.backbone.fc = nn.Sequential(
             nn.Linear(in_features=2048, out_features=1024),
             nn.ReLU(),
+            nn.Dropout(p=0.5),
             nn.Linear(in_features=1024, out_features=1024),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Dropout(p=0.5)
         )
 
         # generate final outputs. These four outputs are essentially the last layer of the regressor in the paper,
