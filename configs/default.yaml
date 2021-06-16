@@ -1,5 +1,5 @@
 trainer: conv
-out_dir: $SCRATCH/final_out  # NOTE: specify a directory in your scratch directory on Leonhard
+out_dir: ../../../../scratch/menwang/final_out  # NOTE: specify a directory in your scratch directory on Leonhard
 
 device: cuda
 
