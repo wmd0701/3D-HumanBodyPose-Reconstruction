@@ -1,5 +1,5 @@
 trainer: conv
-out_dir: ./out/modelfinal  # NOTE: specify a directory in your scratch directory on Leonhard
+out_dir: ../out/modelfinal  # NOTE: specify a directory in your scratch directory on Leonhard
 
 device: cuda
 
@@ -11,7 +11,7 @@ training:
   validate_every: 5000
   checkpoint_every: 5000
 
-  epochs: 5
+  epochs: 10
 
   optimizer:
     name: Adam
