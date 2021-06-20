@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 
 @torch.no_grad()
@@ -41,3 +42,14 @@ def proj_vertices(points, images, fx, fy, cx, cy):
     rendered_img = rendered_img.permute(0, 3, 1, 2)
 
     return rendered_img
+
+def load_smpl_mean_params(path):
+    init_params = np.zeros(3 + 69 + 10, dtype=np.float)
+    mean_values_dict = np.load(path, allow_pickle=True)['arr_0'].ravel()[0]
+
+    init_params[:3] = mean_values_dict['root_orient_mean'][:]
+    init_params[3:66] = mean_values_dict['pose_body_mean'][:]
+    init_params[66:72] = mean_values_dict['pose_hand_mean'][:]
+    init_params[72:82] = mean_values_dict['betas_mean'][:]
+
+    return init_params

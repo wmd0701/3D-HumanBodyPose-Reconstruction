@@ -15,6 +15,7 @@ def train(cfg, model_file):
     checkpoint_every = cfg['training']['checkpoint_every']
     validate_every = cfg['training']['validate_every']
     model_selection_metric = cfg['training'].get('model_selection_metric', 'v2v_l2')
+    n_epochs = cfg['training'].get('epochs', 10)
 
     # init variables
     model = config.get_model(cfg)
@@ -42,6 +43,9 @@ def train(cfg, model_file):
     # training loop
     while True:
         epoch_it += 1
+        if epoch_it >= n_epochs:
+            break
+
         for batch in train_data_loader:
             it += 1
 
@@ -85,3 +89,4 @@ if __name__ == '__main__':
     _args = parser.parse_args()
 
     train(config.load_config(_args), _args.model_file)
+
